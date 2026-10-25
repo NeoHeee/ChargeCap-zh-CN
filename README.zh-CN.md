@@ -1,5 +1,7 @@
 # ChargeCap 简体中文版
 
+**版本：1.1.2**（与上游保持一致）｜[下载最新版 Release](https://github.com/NeoHeee/ChargeCap-zh-CN/releases/latest)｜[上游原版](https://github.com/aoihera/ChargeCap/releases/tag/1.1.2)
+
 ChargeCap 是 Nintendo Switch 的电池充电限制插件。它由 Atmosphère 常驻模块和悬浮菜单组成：达到设定电量后停止充电，电量下降后恢复。悬浮菜单可通过 Tesla Menu 或 Ultrahand 打开。
 
 本仓库在原版 ChargeCap 上提供简体中文菜单与安装说明。原作者项目：[aoihera/ChargeCap](https://github.com/aoihera/ChargeCap)。
@@ -21,7 +23,7 @@ ChargeCap 是 Nintendo Switch 的电池充电限制插件。它由 Atmosphère �
 
 ## 安装
 
-1. 从仓库的 Actions → Build ChargeCap 下载最新成功构建的 ChargeCap.zip。也可以在本机按下方步骤编译。
+1. 从 [Releases](https://github.com/NeoHeee/ChargeCap-zh-CN/releases/latest) 下载 `ChargeCap-zh-CN-1.1.2.zip`。同页还提供上游原版 `ChargeCap-original-1.1.2.zip`；两个安装包二选一。也可以在本机按下方步骤编译。
 2. 解压到 microSD 卡根目录，保留压缩包中的目录结构：
    - atmosphere/contents/42000000000000C0/：常驻限充模块
    - switch/.overlays/ChargeCap.ovl：悬浮菜单（列表和打开后的标题显示为“充电限制”）
