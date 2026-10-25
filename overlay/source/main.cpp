@@ -19,7 +19,6 @@
 
 #include <algorithm>
 #include <cstdio>
-#include <shared_mutex>
 
 #include "ipc_client.hpp"
 #include "settings.hpp"
@@ -29,27 +28,19 @@ namespace {
     constexpr u64 kRefreshNs   = 1000000000ULL;  /* status refresh (1s) */
     constexpr u64 kPersistNs   =  300000000ULL;  /* debounce slider/ini writes (300ms) */
 
-    /* Formats charging state and rounded percentage: "Held at limit (80%)", "Charging (75%)", etc. */
+    /* Formats charging state and rounded percentage. */
     void FormatBatteryStatus(char *out, size_t size, const ChargeCapStatus &status) {
-        const char *state = "Not charging";
+        const char *state = "未在充电";
         if (!status.charger_connected)
-            state = "Unplugged";
+            state = "未连接电源";
         else if (status.limit_held)
-            state = "Held at limit";
+            state = "已达上限，停止充电";
         else if (status.charging)
-            state = "Charging";
-
-        std::string localizedState = state;
-        {
-            std::shared_lock<std::shared_mutex> lock(tsl::gfx::s_translationCacheMutex);
-            const auto it = ult::translationCache.find(state);
-            if (it != ult::translationCache.end())
-                localizedState = it->second;
-        }
-        std::snprintf(out, size, "%s (%u%%)", localizedState.c_str(), status.charge_percent);
+            state = "充电中";
+        std::snprintf(out, size, "%s（%u%%）", state, status.charge_percent);
     }
 
-    /* Formats raw fuel-gauge permille (psm cmd 12) and battery voltage (psm cmd 17) into "Percentage / Voltage" */
+    /* Formats raw fuel-gauge permille (psm cmd 12) and battery voltage (psm cmd 17). */
     void FormatRawCombined(char *out, size_t size, u16 permille, u16 mv) {
         char permilleBuf[16];
         char mvBuf[16];
@@ -167,9 +158,9 @@ public:
         // -------------------------------------------------------------
         // Limit Configuration
         // -------------------------------------------------------------
-        list->addItem(new tsl::elm::CategoryHeader("Charge Limit"));
+        list->addItem(new tsl::elm::CategoryHeader("充电设置"));
 
-        this->m_toggle = new tsl::elm::ToggleListItem("Enabled", this->m_cfg.enabled != 0);
+        this->m_toggle = new tsl::elm::ToggleListItem("启用限充", this->m_cfg.enabled != 0);
         this->m_toggle->setStateChangedListener([this](bool state) {
             this->m_cfg.enabled = state ? 1 : 0;
             this->UpdateToggleText();
@@ -178,7 +169,7 @@ public:
         this->UpdateToggleText();
         list->addItem(this->m_toggle);
 
-        this->m_slider = new ChargeLimitTrackBar("Stop charging at");
+        this->m_slider = new ChargeLimitTrackBar("停止充电上限");
         this->m_slider->setProgress(static_cast<u16>(this->m_cfg.limit - CHARGECAP_LIMIT_MIN));
         this->m_slider->setValueChangedListener([this](u16 val) {
             const u8 clamped = std::min<u8>((u8)val, CHARGECAP_LIMIT_STEPS - 1);
@@ -189,7 +180,7 @@ public:
         });
         list->addItem(this->m_slider);
 
-        this->m_sleepToggle = new tsl::elm::ToggleListItem("Limit in Sleep Mode", this->m_cfg.sleep_limit_enabled != 0);
+        this->m_sleepToggle = new tsl::elm::ToggleListItem("睡眠时限制充电", this->m_cfg.sleep_limit_enabled != 0);
         this->m_sleepToggle->setStateChangedListener([this](bool state) {
             this->m_cfg.sleep_limit_enabled = state ? 1 : 0;
             this->ApplyImmediate();
@@ -200,36 +191,34 @@ public:
             (void)w;
             (void)h;
             const tsl::Color text = renderer->a(tsl::bottomTextColor);
-            renderer->drawString("If console enters Sleep Mode while charging,", false, x + 20, y + 16, 15, text);
-            renderer->drawString("will periodically wake the console in the", false, x + 20, y + 36, 15, text);
-            renderer->drawString("background to be able to apply the limit.", false, x + 20, y + 56, 15, text);
+            renderer->drawString("主机充电时进入睡眠后，系统会定期唤醒，", false, x + 20, y + 20, 15, text);
+            renderer->drawString("检测电量并在达到上限时停止充电。", false, x + 20, y + 44, 15, text);
         }), 76);
 
         // -------------------------------------------------------------
         // Status Indicators
         // -------------------------------------------------------------
-        list->addItem(new tsl::elm::CategoryHeader("Status"));
+        list->addItem(new tsl::elm::CategoryHeader("状态"));
 
-        this->m_chargeItem = new tsl::elm::ListItem("Charging");
+        this->m_chargeItem = new tsl::elm::ListItem("充电状态");
         this->m_chargeItem->setValue("...");
         list->addItem(this->m_chargeItem);
 
-        this->m_rawItem = new tsl::elm::ListItem("Raw gauge");
+        this->m_rawItem = new tsl::elm::ListItem("电量计读数");
         this->m_rawItem->setValue("...");
         list->addItem(this->m_rawItem);
 
         // -------------------------------------------------------------
         // Notes & Advisories (Non-red standard text)
         // -------------------------------------------------------------
-        list->addItem(new tsl::elm::CategoryHeader("Notes"));
+        list->addItem(new tsl::elm::CategoryHeader("说明"));
         list->addItem(new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
             (void)w;
             (void)h;
             const tsl::Color text = renderer->a(tsl::bottomTextColor);
-            renderer->drawString("Off applies no limit at all.", false, x + 20, y + 20, 15, text);
-            renderer->drawString("Long sessions at a fixed cap can cause", false, x + 20, y + 42, 15, text);
-            renderer->drawString("battery desync. (Dis)charge fully now and", false, x + 20, y + 62, 15, text);
-            renderer->drawString("then to keep the gauge honest.", false, x + 20, y + 82, 15, text);
+            renderer->drawString("关闭后不限制充电。", false, x + 20, y + 20, 15, text);
+            renderer->drawString("长期固定限充可能导致电量计读数偏差。", false, x + 20, y + 44, 15, text);
+            renderer->drawString("建议偶尔完整充放电，帮助校准电量计。", false, x + 20, y + 68, 15, text);
         }), 110);
 
         frame->setContent(list);
@@ -264,24 +253,24 @@ private:
         list->addItem(new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
             (void)w;
             (void)h;
-            renderer->drawString("Sysmodule not running", false, x + 20, y + 36, 24, renderer->a(tsl::Color(0xF, 0x0, 0x0, 0xF)));
+            renderer->drawString("限充模块未运行", false, x + 20, y + 36, 24, renderer->a(tsl::Color(0xF, 0x0, 0x0, 0xF)));
         }), 62);
 
         list->addItem(new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
             (void)w;
             (void)h;
             const tsl::Color text = renderer->a(tsl::defaultTextColor);
-            renderer->drawString("The ChargeCap sysmodule is not", false, x + 20, y + 24, 15, text);
-            renderer->drawString("running, so no charge limit is enforced.", false, x + 20, y + 46, 15, text);
-            renderer->drawString("Enable it in ovl-sysmodules (or restore", false, x + 20, y + 88, 15, text);
-            renderer->drawString("the atmosphere/contents/42000000000000C0", false, x + 20, y + 110, 15, text);
-            renderer->drawString("folder), then reboot and open again.", false, x + 20, y + 132, 15, text);
+            renderer->drawString("ChargeCap 常驻模块当前未运行，", false, x + 20, y + 24, 15, text);
+            renderer->drawString("因此暂时不会限制充电。", false, x + 20, y + 46, 15, text);
+            renderer->drawString("请在 ovl-sysmodules 中启用模块，", false, x + 20, y + 88, 15, text);
+            renderer->drawString("或确认 SD 卡上存在模块文件夹：", false, x + 20, y + 110, 15, text);
+            renderer->drawString("atmosphere/contents/42000000000000C0", false, x + 20, y + 132, 15, text);
         }), 152);
 
         list->addItem(new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
             (void)w;
             (void)h;
-            renderer->drawString("Press B to close.", false, x + 20, y + 26, 15, renderer->a(tsl::bottomTextColor));
+            renderer->drawString("按 B 键关闭。", false, x + 20, y + 26, 15, renderer->a(tsl::bottomTextColor));
         }), 44);
 
         frame->setContent(list);
@@ -358,4 +347,5 @@ public:
 int main(int argc, char **argv) {
     return tsl::loop<ChargeCapOverlay>(argc, argv);
 }
+
 
