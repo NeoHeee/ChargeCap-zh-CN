@@ -1,6 +1,5 @@
 {
-  "name": "ChargeCap",
+  "name": "充电限制",
   "tid": "42000000000000C0",
   "requires_reboot": true
 }
-
