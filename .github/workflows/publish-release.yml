@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - .github/workflows/publish-release.yml
+      - sysmodule/toolbox.json
 
 permissions:
   contents: write
