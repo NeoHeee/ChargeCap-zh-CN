@@ -53,7 +53,7 @@ Keeping a lithium-ion battery capped at a fixed percentage over long periods mea
 1. Grab the latest `ChargeCap.zip` from Releases or build it from source.
 2. Extract the zip to the root of your SD card:
    - `atmosphere/contents/42000000000000C0/`
-   - `switch/.overlays/ChargeCap.ovl`
+   - `switch/.overlays/充电限制.ovl`
 3. **First-time install note:** If you transfer the files over MTP or FTP while the console is running, **reboot your Switch once** so Atmosphère launches the sysmodule.
 4. Open the Tesla/Ultrahand overlay menu (normally `ZL + ZR + D-Pad Down` or `L + D-Pad Down + R3`), select **ChargeCap**, adjust your limit, and toggle it ON.
 
