@@ -10,13 +10,13 @@ TOPDIR ?= $(CURDIR)
 include $(DEVKITPRO)/libnx/switch_rules
 
 #---------------------------------------------------------------------------------
-TARGET   := ChargeCap
+TARGET   := 充电限制
 BUILD    := build
 OUTDIR   := out
 SOURCES  := source
 INCLUDES := ../common/include
 
-APP_TITLE   := ChargeCap
+APP_TITLE   := 充电限制
 APP_AUTHOR  := ChargeCap
 APP_VERSION := 1.1.2
 NO_ICON     := 1
