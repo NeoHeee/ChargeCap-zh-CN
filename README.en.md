@@ -2,6 +2,8 @@
 
 简体中文：[README.md](README.md)
 
+**Version: 1.1.2** (aligned with upstream) | [Latest release](https://github.com/NeoHeee/ChargeCap-zh-CN/releases/latest) | [Upstream original](https://github.com/aoihera/ChargeCap/releases/tag/1.1.2)
+
 A lightweight background sysmodule and [libultrahand](https://github.com/ppkantorski/libultrahand) overlay for the Nintendo Switch that stops charging once the battery reaches a configurable threshold (50% - 99%).
 
 Useful if you keep your Switch docked or plugged in for long periods and want to avoid holding the battery at peak voltage.
@@ -50,7 +52,7 @@ Keeping a lithium-ion battery capped at a fixed percentage over long periods mea
 
 ## Installation
 
-1. Grab the latest `ChargeCap.zip` from Releases or build it from source.
+1. Download `ChargeCap-zh-CN-1.1.2.zip` from the [latest Release](https://github.com/NeoHeee/ChargeCap-zh-CN/releases/latest). The same release also includes the upstream original, `ChargeCap-original-1.1.2.zip`; install one package at a time. You can also build from source.
 2. Extract the zip to the root of your SD card:
    - `atmosphere/contents/42000000000000C0/`
    - `switch/.overlays/ChargeCap.ovl`
