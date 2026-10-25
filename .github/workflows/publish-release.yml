@@ -1,0 +1,61 @@
+name: Publish ChargeCap 1.1.2 Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/publish-release.yml
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    container: devkitpro/devkita64:latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Switch libraries
+        run: dkp-pacman -S --needed --noconfirm switch-curl switch-zlib switch-mbedtls
+
+      - name: Fetch libultrahand
+        run: ./scripts/vendor-libultrahand.sh
+
+      - name: Build Chinese package
+        run: make zip
+
+      - name: Prepare release assets
+        run: |
+          mkdir -p release
+          cp ChargeCap.zip release/ChargeCap-zh-CN-1.1.2.zip
+          curl --fail --location --retry 3 \
+            https://github.com/aoihera/ChargeCap/releases/download/1.1.2/ChargeCap.zip \
+            --output release/ChargeCap-original-1.1.2.zip
+          cd release
+          sha256sum *.zip > SHA256SUMS.txt
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: 1.1.2
+          target_commitish: ${{ github.sha }}
+          name: ChargeCap 1.1.2 | 简体中文版 + 上游原版
+          body: |
+            ## 版本
+            1.1.2，与[上游 ChargeCap 1.1.2](https://github.com/aoihera/ChargeCap/releases/tag/1.1.2)保持一致。
+
+            ## 下载
+            - `ChargeCap-zh-CN-1.1.2.zip`：简体中文界面版本。
+            - `ChargeCap-original-1.1.2.zip`：上游原版安装包。
+            - `SHA256SUMS.txt`：两个安装包的 SHA-256 校验值。
+
+            两个安装包二选一安装，请勿同时解压到同一张 SD 卡。
+          files: |
+            release/ChargeCap-zh-CN-1.1.2.zip
+            release/ChargeCap-original-1.1.2.zip
+            release/SHA256SUMS.txt
+          fail_on_unmatched_files: true
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
