@@ -27,7 +27,7 @@ overlay: libultrahand
 
 dist: all
 	@[ -f sysmodule/out/chargecap.nsp ] || (echo "ERROR: sysmodule did not build"; exit 1)
-	@[ -f overlay/out/充电限制.ovl ] || (echo "ERROR: overlay did not build"; exit 1)
+	@[ -f overlay/out/ChargeCap.ovl ] || (echo "ERROR: overlay did not build"; exit 1)
 	@rm -rf $(DIST)
 	@mkdir -p $(CONTENTS)/flags
 	@mkdir -p $(DIST)/switch/.overlays
@@ -35,7 +35,7 @@ dist: all
 	@cp sysmodule/out/chargecap.nsp $(CONTENTS)/exefs.nsp
 	@cp sysmodule/toolbox.json $(CONTENTS)/toolbox.json
 	@touch $(CONTENTS)/flags/boot2.flag
-	@cp overlay/out/充电限制.ovl $(DIST)/switch/.overlays/充电限制.ovl
+	@cp overlay/out/充电限制.ovl $(DIST)/switch/.overlays/ChargeCap.ovl
 	@cp config/chargecap/lang/zh.json $(DIST)/config/chargecap/lang/zh.json
 	@echo "dist tree ready in $(DIST)/ - copy its contents to the root of your SD card"
 
