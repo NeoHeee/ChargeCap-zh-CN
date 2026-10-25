@@ -6,6 +6,7 @@ on:
     paths:
       - .github/workflows/publish-release.yml
       - sysmodule/toolbox.json
+      - overlay/Makefile
 
 permissions:
   contents: write
