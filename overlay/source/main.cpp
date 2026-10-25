@@ -146,7 +146,7 @@ public:
     }
 
     virtual tsl::elm::Element *createUI() override {
-        auto *frame = new tsl::elm::OverlayFrame("ChargeCap", APP_VERSION);
+        auto *frame = new tsl::elm::OverlayFrame("充电限制", APP_VERSION);
 
         if (!ipc::ModuleRunning()) {
             this->m_hasFullUi = false;
