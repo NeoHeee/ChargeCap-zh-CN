@@ -1,0 +1,17 @@
+build/
+out/
+dist/
+*.zip
+*.elf
+*.nso
+*.nsp
+*.npdm
+*.nacp
+*.ovl
+*.map
+
+# vendored dependency: keep the tree, ignore the snapshot unless you commit it
+# (delete these two lines if you want to commit the vendored copy)
+overlay/lib/libultrahand/*
+!overlay/lib/libultrahand/README.md
+
