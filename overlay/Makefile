@@ -18,7 +18,7 @@ INCLUDES := ../common/include
 
 APP_TITLE   := 充电限制
 APP_AUTHOR  := ChargeCap
-APP_VERSION := 1.1.2
+APP_VERSION := 牧 汉化 1.1.2
 NO_ICON     := 1
 
 #---------------------------------------------------------------------------------
