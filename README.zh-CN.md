@@ -24,7 +24,7 @@ ChargeCap 是 Nintendo Switch 的电池充电限制插件。它由 Atmosphère �
 1. 从仓库的 Actions → Build ChargeCap 下载最新成功构建的 ChargeCap.zip。也可以在本机按下方步骤编译。
 2. 解压到 microSD 卡根目录，保留压缩包中的目录结构：
    - atmosphere/contents/42000000000000C0/：常驻限充模块
-   - switch/.overlays/ChargeCap.ovl：悬浮菜单
+   - switch/.overlays/充电限制.ovl：悬浮菜单（Ultrahand 中显示为“充电限制”）
    - config/chargecap/lang/zh.json：简体中文菜单翻译
 3. 将文件复制到正在运行的主机后，重启一次，使 Atmosphère 加载常驻模块。
 4. 用 Tesla Menu 或 Ultrahand 打开 ChargeCap，设置上限并开启“启用”。
