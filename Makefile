@@ -27,7 +27,7 @@ overlay: libultrahand
 
 dist: all
 	@[ -f sysmodule/out/chargecap.nsp ] || (echo "ERROR: sysmodule did not build"; exit 1)
-	@[ -f overlay/out/ChargeCap.ovl ] || (echo "ERROR: overlay did not build"; exit 1)
+	@[ -f overlay/out/充电限制.ovl ] || (echo "ERROR: overlay did not build"; exit 1)
 	@rm -rf $(DIST)
 	@mkdir -p $(CONTENTS)/flags
 	@mkdir -p $(DIST)/switch/.overlays
